@@ -1,25 +1,29 @@
 package com.learning;
 
-import com.learning.config.HSMConfigProvider;
 import com.learning.config.SoftHSMConfigProvider;
+import com.learning.provider.PKCS11SunSecurityProvider;
+import com.learning.provider.SecurityProvider;
 
 import javax.crypto.Cipher;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
-import java.io.FileWriter;
-import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.security.*;
-import java.security.cert.CertificateException;
+import java.security.Key;
+import java.security.KeyStore;
+import java.security.Provider;
+import java.security.Security;
 import java.util.Scanner;
 
 
 public class AESEncryption {
 
-    private static HSMConfigProvider hsmConfigProvider;
+    private static SecurityProvider securityProvider;
 
     static {
-        hsmConfigProvider = new SoftHSMConfigProvider();
+        String configFilePath = "/tmp/softhsm.cfg";
+        String hsmSharedLibFilePath = "/opt/homebrew/Cellar/softhsm/2.6.1/lib/softhsm/libsofthsm2.so";
+
+        securityProvider = new PKCS11SunSecurityProvider(new SoftHSMConfigProvider(), configFilePath, hsmSharedLibFilePath, "1632003794");
     }
 
     private static final String AES_CIPHER = "AES/ECB/PKCS5Padding";
@@ -30,18 +34,7 @@ public class AESEncryption {
             String inputText = s.nextLine();
             s.close();
 
-            String configFile = "/tmp/softhsm.cfg";
-            String hsmSharedLibFile = "/opt/homebrew/Cellar/softhsm/2.6.1/lib/softhsm/libsofthsm2.so";
-            hsmConfigProvider.createConfigFile(configFile, hsmSharedLibFile, "1632003794");
-
-            Provider pkcs11Provider = Security.getProvider("SunPKCS11");
-            pkcs11Provider = pkcs11Provider.configure(configFile);
-
-            if (-1 == Security.addProvider(pkcs11Provider)) {
-                throw new RuntimeException("could not add security provider");
-            } else {
-                System.out.println("provider initialized...");
-            }
+            Provider pkcs11Provider = securityProvider.getInstance();
 
             Security.addProvider(pkcs11Provider);
             char[] pin = "1234".toCharArray();
