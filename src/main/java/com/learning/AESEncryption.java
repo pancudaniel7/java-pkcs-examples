@@ -9,10 +9,8 @@ import javax.crypto.spec.SecretKeySpec;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.security.Key;
-import java.security.KeyStore;
-import java.security.Provider;
-import java.security.Security;
+import java.security.*;
+import java.security.cert.CertificateException;
 import java.util.Scanner;
 
 
@@ -26,8 +24,7 @@ public class AESEncryption {
 
     private static final String AES_CIPHER = "AES/ECB/PKCS5Padding";
 
-    public static void main(String[] args) {
-        try {
+    public static void main(String[] args) throws Exception {
             System.out.println("Enter the text to be encrypted: ");
             Scanner s = new Scanner(System.in);
             String inputText = s.nextLine();
@@ -67,9 +64,6 @@ public class AESEncryption {
 
             String decryptedText = performDecryption(key1, encryptedString);
             System.out.println("decryptedString: " + decryptedText);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
     }
 
     private static String performEncryption(Key secretKey, String inputText) throws Exception {
