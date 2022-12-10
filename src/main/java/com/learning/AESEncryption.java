@@ -1,5 +1,8 @@
 package com.learning;
 
+import com.learning.config.HSMConfigProvider;
+import com.learning.config.SoftHSMConfigProvider;
+
 import javax.crypto.Cipher;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
@@ -14,18 +17,14 @@ import java.util.Scanner;
 
 
 public class AESEncryption {
-    private static final String AES_CIPHER = "AES/ECB/PKCS5Padding";
 
-    public static void createSoftHSMConfig(String hsmConfigFile, String hsmSharedLibraryFile) throws IOException {
-        FileWriter fw = new FileWriter(hsmConfigFile);
+    private static HSMConfigProvider hsmConfigProvider;
 
-        fw.write("name = SoftHSM\n" + "library = " + hsmSharedLibraryFile);
-        fw.write("\n slot = 1632003794\n" + "attributes(generate, *, *) = {\n");
-        fw.write("\t CKA_TOKEN = true\n}\n" + "attributes(generate, CKO_CERTIFICATE, *) = {\n");
-        fw.write("\t CKA_PRIVATE = false\n}\n" + "attributes(generate, CKO_PUBLIC_KEY, *) = {\n");
-        fw.write("\t CKA_PRIVATE = false\n}\n");
-        fw.close();
+    static {
+        hsmConfigProvider = new SoftHSMConfigProvider();
     }
+
+    private static final String AES_CIPHER = "AES/ECB/PKCS5Padding";
 
     public static void main(String[] args) {
         try {
@@ -36,7 +35,7 @@ public class AESEncryption {
 
             String configFile = "/tmp/softhsm.cfg";
             String hsmSharedLibFile = "/opt/homebrew/Cellar/softhsm/2.6.1/lib/softhsm/libsofthsm2.so";
-            createSoftHSMConfig(configFile, hsmSharedLibFile);
+            hsmConfigProvider.createConfigFile(configFile, hsmSharedLibFile, "1632003794");
 
             Provider pkcs11Provider = Security.getProvider("SunPKCS11");
             pkcs11Provider = pkcs11Provider.configure(configFile);
