@@ -1,4 +1,4 @@
-package com.learning.provider;
+package com.examples.provider;
 
 import java.io.IOException;
 import java.security.Provider;

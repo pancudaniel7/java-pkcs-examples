@@ -1,6 +1,6 @@
-package com.learning.provider;
+package com.examples.provider;
 
-import com.learning.config.HSMConfigProvider;
+import com.examples.config.HSMConfigProvider;
 
 import java.io.IOException;
 import java.security.Provider;

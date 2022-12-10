@@ -1,4 +1,4 @@
-package com.learning.config;
+package com.examples.config;
 
 import java.io.FileWriter;
 import java.io.IOException;

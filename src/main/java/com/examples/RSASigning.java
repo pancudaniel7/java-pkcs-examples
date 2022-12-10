@@ -1,8 +1,8 @@
-package com.learning;
+package com.examples;
 
-import com.learning.config.SoftHSMConfigProvider;
-import com.learning.provider.PKCS11SunSecurityProvider;
-import com.learning.provider.SecurityProvider;
+import com.examples.config.SoftHSMConfigProvider;
+import com.examples.provider.PKCS11SunSecurityProvider;
+import com.examples.provider.SecurityProvider;
 
 import java.io.IOException;
 import java.security.Provider;

@@ -1,4 +1,4 @@
-package com.learning.config;
+package com.examples.config;
 
 import java.io.IOException;
 
