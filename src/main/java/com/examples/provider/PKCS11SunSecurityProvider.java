@@ -8,9 +8,9 @@ import java.security.Security;
 
 public class PKCS11SunSecurityProvider implements SecurityProvider {
 
-    private HSMConfigProvider hsmConfigProvider;
-    private String configFilePath;
-    private String hsmSharedLibFilePath;
+    private final HSMConfigProvider hsmConfigProvider;
+    private final String configFilePath;
+    private final String hsmSharedLibFilePath;
     private final String slot;
 
     public PKCS11SunSecurityProvider(HSMConfigProvider hsmConfigProvider, String configFilePath, String hsmSharedLibFilePath, String slot) {

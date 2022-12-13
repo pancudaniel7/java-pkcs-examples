@@ -23,7 +23,8 @@ public class AESEncryption {
         String configFilePath = "/tmp/softhsm.cfg";
         String hsmSharedLibFilePath = "/opt/homebrew/Cellar/softhsm/2.6.1/lib/softhsm/libsofthsm2.so";
 
-        securityProvider = new PKCS11SunSecurityProvider(new SoftHSMConfigProvider(), configFilePath, hsmSharedLibFilePath, "1632003794");
+        String slot = "366663833";
+        securityProvider = new PKCS11SunSecurityProvider(new SoftHSMConfigProvider(), configFilePath, hsmSharedLibFilePath, slot);
     }
 
     private static final String AES_CIPHER = "AES/ECB/PKCS5Padding";

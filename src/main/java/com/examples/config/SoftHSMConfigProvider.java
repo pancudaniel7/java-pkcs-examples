@@ -12,8 +12,8 @@ public class SoftHSMConfigProvider implements HSMConfigProvider {
         fw.write("name = SoftHSM\n" + "library = " + hsmSharedLibraryFile);
         fw.write("\n slot = " + slot + "\n" + "attributes(generate, *, *) = {\n");
         fw.write("\t CKA_TOKEN = true\n}\n" + "attributes(generate, CKO_CERTIFICATE, *) = {\n");
-        fw.write("\t CKA_PRIVATE = false\n}\n" + "attributes(generate, CKO_PUBLIC_KEY, *) = {\n");
-        fw.write("\t CKA_PRIVATE = false\n}\n");
+        fw.write("\t CKA_PRIVATE = true\n}\n" + "attributes(generate, CKO_PUBLIC_KEY, *) = {\n");
+        fw.write("\t CKA_PRIVATE = true\n}\n");
         fw.close();
     }
 }
