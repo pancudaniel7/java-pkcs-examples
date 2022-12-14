@@ -13,6 +13,8 @@ import java.security.*;
 import java.security.cert.CertificateEncodingException;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
+import java.security.spec.AlgorithmParameterSpec;
+import java.security.spec.ECGenParameterSpec;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
@@ -20,7 +22,7 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.Scanner;
 
-public class RSASigning {
+public class ECSigning {
 
     private static final SecurityProvider securityProvider;
 
@@ -28,7 +30,7 @@ public class RSASigning {
         String configFilePath = "/tmp/softhsm.cfg";
         String hsmSharedLibFilePath = "/opt/homebrew/Cellar/softhsm/2.6.1/lib/softhsm/libsofthsm2.so";
 
-        String softhsmSlotNumber = "1372486820";
+        String softhsmSlotNumber = "1811141497";
         securityProvider = new PKCS11SunSecurityProvider(new SoftHSMConfigProvider(), configFilePath, hsmSharedLibFilePath, softhsmSlotNumber);
     }
 
@@ -42,12 +44,12 @@ public class RSASigning {
 
         ZonedDateTime afterDate = LocalDate.now().plusYears(20L).atStartOfDay(ZoneId.systemDefault());
         certificateGenerator.setNotAfter(Date.from(afterDate.toInstant()));
-        certificateGenerator.setSignatureAlgorithm("SHA256withRSA");
+        certificateGenerator.setSignatureAlgorithm("SHA256withECDSA");
 
         return certificateGenerator.generate(keyPair.getPrivate());
     }
 
-    public static void main(String[] args) throws IOException, KeyStoreException, CertificateException, NoSuchAlgorithmException, UnrecoverableKeyException, SignatureException, InvalidKeyException {
+    public static void main(String[] args) throws IOException, KeyStoreException, CertificateException, NoSuchAlgorithmException, UnrecoverableKeyException, SignatureException, InvalidKeyException, InvalidAlgorithmParameterException {
         Provider pkcs11Provider = securityProvider.getInstance();
 
         char[] pin = "1234".toCharArray();
@@ -60,8 +62,9 @@ public class RSASigning {
         X509Certificate certificate = (X509Certificate) keyStore.getCertificate("key1");
 
         if (privateKey == null && certificate == null) {
-            KeyPairGenerator gen = KeyPairGenerator.getInstance("RSA", pkcs11Provider);
-            gen.initialize(2048);
+            KeyPairGenerator gen = KeyPairGenerator.getInstance("EC", pkcs11Provider);
+            ECGenParameterSpec ecsp = new ECGenParameterSpec("secp256k1");
+            gen.initialize(ecsp);
             KeyPair keyPair = gen.generateKeyPair();
 
             privateKey = keyPair.getPrivate();
@@ -74,7 +77,7 @@ public class RSASigning {
         String inputText = s.nextLine();
         s.close();
 
-        Signature singingObj = Signature.getInstance("SHA256withRSA", pkcs11Provider);
+        Signature singingObj = Signature.getInstance("SHA256withECDSA", pkcs11Provider);
 
         singingObj.initSign(privateKey);
         singingObj.update(inputText.getBytes(StandardCharsets.UTF_8));
@@ -84,11 +87,11 @@ public class RSASigning {
         System.out.println("Signature data: " + Arrays.toString(digitalSignature));
         System.out.println("Verify signature...");
 
-        Signature verifySingingObj = Signature.getInstance("SHA256withRSA", pkcs11Provider);
+        Signature singingObjVerify = Signature.getInstance("SHA256withECDSA", pkcs11Provider);
 
-        verifySingingObj.initVerify(certificate.getPublicKey());
-        verifySingingObj.update(inputText.getBytes(StandardCharsets.UTF_8));
-        boolean isValid = verifySingingObj.verify(digitalSignature);
+        singingObjVerify.initVerify(certificate.getPublicKey());
+        singingObjVerify.update(inputText.getBytes(StandardCharsets.UTF_8));
+        boolean isValid = singingObjVerify.verify(digitalSignature);
 
         String isValidResponse = isValid ? "valid" : "invalid";
         System.out.println("The signature is " + isValidResponse);
