@@ -36,8 +36,8 @@ public class AESEncryption {
             s.close();
 
             Provider pkcs11Provider = securityProvider.getInstance();
-
             Security.addProvider(pkcs11Provider);
+
             char[] pin = "1234".toCharArray();
             KeyStore keyStore;
 

@@ -24,11 +24,13 @@ public class RSASigning {
 
     private static final SecurityProvider securityProvider;
 
+    private static final String KEY_ALIAS = "key3";
+
     static {
         String configFilePath = "/tmp/softhsm.cfg";
         String hsmSharedLibFilePath = "/opt/homebrew/Cellar/softhsm/2.6.1/lib/softhsm/libsofthsm2.so";
 
-        String softhsmSlotNumber = "1372486820";
+        String softhsmSlotNumber = "765320209";
         securityProvider = new PKCS11SunSecurityProvider(new SoftHSMConfigProvider(), configFilePath, hsmSharedLibFilePath, softhsmSlotNumber);
     }
 
@@ -56,8 +58,8 @@ public class RSASigning {
         keyStore = KeyStore.getInstance("PKCS11", pkcs11Provider);
         keyStore.load(null, pin);
 
-        PrivateKey privateKey = (PrivateKey) keyStore.getKey("key1", "1234".toCharArray());
-        X509Certificate certificate = (X509Certificate) keyStore.getCertificate("key1");
+        PrivateKey privateKey = (PrivateKey) keyStore.getKey(KEY_ALIAS, "1234".toCharArray());
+        X509Certificate certificate = (X509Certificate) keyStore.getCertificate(KEY_ALIAS);
 
         if (privateKey == null && certificate == null) {
             KeyPairGenerator gen = KeyPairGenerator.getInstance("RSA", pkcs11Provider);
@@ -66,7 +68,7 @@ public class RSASigning {
 
             privateKey = keyPair.getPrivate();
             certificate = generateCertificate(keyPair);
-            keyStore.setKeyEntry("key1", privateKey, "1234".toCharArray(), new X509Certificate[]{certificate});
+            keyStore.setKeyEntry(KEY_ALIAS, privateKey, "1234".toCharArray(), new X509Certificate[]{certificate});
         }
 
         System.out.println("Enter the text to be sign: ");
